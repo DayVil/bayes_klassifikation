@@ -22,16 +22,9 @@ end
 
 
 % TODO
-% [~, ~, count] = size(pos_images)
-% for i = 1:count
-%     image = pos_images(:, :, i);
-%     image = imadjust(image);
-%     pos_images(:, :, i) = image;
-% end
 
 mean_cell = mean(pos_images, 3);
 mean_cell = imadjust(mean_cell);
-% imshow(mean_cell);
 
 % Histogramm bestimmen
 % Befehl: imhist
@@ -50,9 +43,11 @@ imhist(mean_cell);
 
 
 % TODO
-cell_mask(mean_cell > 0.6) = 1;
-cell_mask(mean_cell < 0.25) = -1;
-cell_mask(mean_cell >= 0.25 & mean_cell <= 0.6) = 0;
+c_min = 0.45;
+c_max = 0.55;
+cell_mask(mean_cell > c_max) = 1;
+cell_mask(mean_cell < c_min) = -1;
+cell_mask(mean_cell >= c_min & mean_cell <= c_max) = 0;
 
 %% Bestimmung der Verteilungsfunktionen
 %  Als Merkmal wird die Differenz des mittleren Grauwerts von Zellkern und
@@ -135,7 +130,6 @@ histogram(bad_features);
     % TODO
 
 threshold = (mu * std_bad + mu_bad * std_pos) / (std_pos + std_bad);
-% threshold = 0.8;
 xline(threshold, "green");
 hold off;
 
@@ -156,9 +150,10 @@ img = im2double(rgb2gray(imread('CellDetectPreFreeze.jpg')));
 window_size = size(mean_cell);
 step_size = 5;
 
-% figure;
-imshow(img);
-hold on;
+h = figure;
+ax = axes(h);
+imshow(img, 'Parent', ax);
+hold(ax, 'on');
 for i = 1:step_size:rows-window_size(1)
     for j = 1:step_size:cols-window_size(2)
         window = img(i:i+window_size(1)-1, j:j+window_size(2)-1);
@@ -168,11 +163,11 @@ for i = 1:step_size:rows-window_size(1)
 
         if feature > threshold
             % rectangle('Position', [j, i, window_size(2), window_size(1)], 'EdgeColor', 'r');
-            plot(j + (window_size(1) / 2), i + (window_size(2) / 2), 'rp', 'MarkerFaceColor','g')
+            plot(ax, j + (window_size(1) / 2), i + (window_size(2) / 2), 'rp', 'MarkerFaceColor','g');
         end
     end
 end
-hold off;
+hold(ax, 'off');
 
 % Bild und gefundene Zellen darstellen
 
