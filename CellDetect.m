@@ -129,7 +129,7 @@ histogram(bad_features);
 
     % TODO
 
-threshold = (mu * std_bad + mu_bad * std_pos) / (std_pos + std_bad);
+threshold = 0.1;
 xline(threshold, "green");
 hold off;
 
@@ -148,7 +148,7 @@ img = im2double(rgb2gray(imread('CellDetectPreFreeze.jpg')));
 %% Classify test image
 [rows, cols] = size(img);
 window_size = size(mean_cell);
-step_size = 5;
+step_size = 2;
 
 h = figure;
 ax = axes(h);
@@ -162,7 +162,6 @@ for i = 1:step_size:rows-window_size(1)
         feature = nucleus_mean - wall_mean;
 
         if feature > threshold
-            % rectangle('Position', [j, i, window_size(2), window_size(1)], 'EdgeColor', 'r');
             plot(ax, j + (window_size(1) / 2), i + (window_size(2) / 2), 'rp', 'MarkerFaceColor','g');
         end
     end
